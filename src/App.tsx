@@ -9,6 +9,7 @@ import TenantProfile from "./pages/admin/TenantProfile";
 import InvoiceDetail from "./pages/admin/InvoiceDetail";
 import Payments from "./pages/admin/Payments";
 import Properties from "./pages/admin/Property";
+import Settings from "./pages/admin/Settings";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/admin/invoice/:invoiceId" element={<InvoiceDetail />} />
           <Route path="/admin/payments" element={<Payments />} />
           <Route path="/admin/property" element={<Properties />} />
+          <Route path="/admin/settings" element={<Settings />}/>
             {/* Add other admin routes here */}
         </Route>
       </Routes>
