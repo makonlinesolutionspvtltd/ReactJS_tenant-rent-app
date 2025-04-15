@@ -9,6 +9,8 @@ export default function Payments() {
   const [search, setSearch] = useState("");
   const [monthFilter, setMonthFilter] = useState("All");
   const [yearFilter, setYearFilter] = useState("All");
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -19,7 +21,7 @@ export default function Payments() {
       tenant: "John Doe",
       property: "Flat 101 - Green Residency",
       date: "2024-04-05",
-      amount: "₹12,000",
+      amount: "₹12000",
       status: "Paid",
     },
     {
@@ -28,10 +30,9 @@ export default function Payments() {
       tenant: "Jane Smith",
       property: "Sunrise Apartments - 3B",
       date: "2024-05-01",
-      amount: "₹12,000",
+      amount: "₹12000",
       status: "Pending",
     },
-    // Add more records as needed
   ];
 
   const filtered = payments.filter((p) => {
@@ -41,12 +42,12 @@ export default function Payments() {
       p.property.toLowerCase().includes(search.toLowerCase());
 
     const date = new Date(p.date);
-    const matchesMonth =
-      monthFilter === "All" || date.getMonth() + 1 === parseInt(monthFilter);
-    const matchesYear =
-      yearFilter === "All" || date.getFullYear().toString() === yearFilter;
+    const matchesMonth = monthFilter === "All" || date.getMonth() + 1 === parseInt(monthFilter);
+    const matchesYear = yearFilter === "All" || date.getFullYear().toString() === yearFilter;
+    const matchesFrom = !fromDate || date >= new Date(fromDate);
+    const matchesTo = !toDate || date <= new Date(toDate);
 
-    return matchesStatus && matchesSearch && matchesMonth && matchesYear;
+    return matchesStatus && matchesSearch && matchesMonth && matchesYear && matchesFrom && matchesTo;
   });
 
   const paginated = filtered.slice((page - 1) * itemsPerPage, page * itemsPerPage);
@@ -82,12 +83,12 @@ export default function Payments() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between flex-wrap gap-4">
+      <div className="flex flex-wrap gap-3 items-end justify-between">
         <h1 className="text-2xl font-bold">Payments</h1>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 items-end">
           <input
             type="text"
-            placeholder="Search tenant/property..."
+            placeholder="Search tenant/property"
             className="border px-3 py-1 text-sm rounded"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -106,9 +107,9 @@ export default function Payments() {
             className="border px-3 py-1 text-sm rounded"
           >
             <option value="All">All Months</option>
-            {[...Array(12)].map((_, idx) => (
-              <option key={idx} value={idx + 1}>
-                {new Date(0, idx).toLocaleString("default", { month: "short" })}
+            {[...Array(12)].map((_, i) => (
+              <option key={i} value={i + 1}>
+                {new Date(0, i).toLocaleString("default", { month: "short" })}
               </option>
             ))}
           </select>
@@ -121,6 +122,18 @@ export default function Payments() {
             <option value="Paid">Paid</option>
             <option value="Pending">Pending</option>
           </select>
+          <input
+            type="date"
+            value={fromDate}
+            onChange={(e) => setFromDate(e.target.value)}
+            className="border px-3 py-1 text-sm rounded"
+          />
+          <input
+            type="date"
+            value={toDate}
+            onChange={(e) => setToDate(e.target.value)}
+            className="border px-3 py-1 text-sm rounded"
+          />
           <button onClick={exportCSV} className="border px-3 py-1 rounded text-sm">
             Export CSV
           </button>
@@ -165,8 +178,25 @@ export default function Payments() {
         </tbody>
       </table>
 
+      {/* Totals */}
+      <div className="mt-4 flex flex-col sm:flex-row justify-between text-sm font-semibold">
+        <div>
+          Total (this page): ₹
+          {paginated.reduce((sum, p) => sum + parseInt(p.amount.replace(/[^0-9]/g, "")), 0).toLocaleString()}
+        </div>
+        <div>
+          Total (this month): ₹
+          {filtered.reduce((sum, p) => {
+            const date = new Date(p.date);
+            const now = new Date();
+            const sameMonth = date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+            return sameMonth ? sum + parseInt(p.amount.replace(/[^0-9]/g, "")) : sum;
+          }, 0).toLocaleString()}
+        </div>
+      </div>
+
       {/* Pagination Controls */}
-      <div className="flex justify-end gap-2 text-sm">
+      <div className="flex justify-end gap-2 text-sm mt-4">
         <button
           onClick={() => setPage((p) => Math.max(p - 1, 1))}
           disabled={page === 1}

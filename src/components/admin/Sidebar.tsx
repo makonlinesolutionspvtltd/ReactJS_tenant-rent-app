@@ -3,9 +3,11 @@ import { Link, useLocation } from "react-router-dom";
 const navItems = [
   { name: "Dashboard", path: "/admin/dashboard" },
   { name: "Tenants", path: "/admin/tenants" },
+  { name: "Property", path: "/admin/property" },
   { name: "Payments", path: "/admin/payments" },
   { name: "Reminders", path: "/admin/reminders" },
   { name: "Settings", path: "/admin/settings" },
+
 ];
 
 export default function Sidebar() {

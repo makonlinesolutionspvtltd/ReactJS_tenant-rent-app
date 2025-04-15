@@ -8,6 +8,7 @@ import Tenants from "./pages/admin/Tenants";
 import TenantProfile from "./pages/admin/TenantProfile";
 import InvoiceDetail from "./pages/admin/InvoiceDetail";
 import Payments from "./pages/admin/Payments";
+import Properties from "./pages/admin/Property";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/admin/tenants/:name" element={<TenantProfile />} />
           <Route path="/admin/invoice/:invoiceId" element={<InvoiceDetail />} />
           <Route path="/admin/payments" element={<Payments />} />
+          <Route path="/admin/property" element={<Properties />} />
             {/* Add other admin routes here */}
         </Route>
       </Routes>
